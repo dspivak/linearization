@@ -1,0 +1,543 @@
+\documentclass[11pt, oneside, article]{memoir}
+
+
+\linespread{1.15}\selectfont % set leading before the layout, so it is computed on the real \baselineskip
+\settrims{0pt}{0pt} % page and stock same size
+\settypeblocksize{*}{35.4pc}{*} % {height}{width}{ratio}
+\setlrmargins{*}{*}{1} % {spine}{edge}{ratio}
+\setulmarginsandblock{0.85in}{0.85in}{*} % top fixed; [lines] grows the bottom margin
+\setheadfoot{\onelineskip}{2.66\onelineskip} % {headheight}{footskip}
+\setheaderspaces{*}{1.5\onelineskip}{*} % {headdrop}{headsep}{ratio}
+\checkandfixthelayout[lines] % round textheight to a whole number of lines
+
+% Running headers: chapter on left, section on right
+\makepagestyle{dap}
+\makeevenhead{dap}{\small\slshape\leftmark}{}{\small\slshape\rightmark}
+\makeoddhead{dap}{\small\slshape\leftmark}{}{\small\slshape\rightmark}
+\makeevenfoot{dap}{}{\thepage}{}
+\makeoddfoot{dap}{}{\thepage}{}
+\makeheadrule{dap}{\textwidth}{\normalrulethickness}
+\makepsmarks{dap}{%
+  \nouppercaseheads
+  \createmark{chapter}{left}{shownumber}{}{.\enspace}%
+  \createmark{section}{right}{shownumber}{}{.\enspace}%
+}
+\pagestyle{dap}
+
+\usepackage{amsthm}
+\usepackage{mathtools}
+
+\usepackage[inline]{enumitem}
+\usepackage{ifthen}
+\usepackage[utf8]{inputenc} %allows non-ascii in bib file
+\usepackage{xcolor}
+
+\usepackage[backend=biber, backref=true, maxbibnames = 10, style = alphabetic]{biblatex}
+\usepackage[bookmarks=true, colorlinks=true, linkcolor=blue!50!black,
+citecolor=orange!50!black, urlcolor=orange!50!black, pdfencoding=unicode]{hyperref}
+\usepackage{xurl} % break URLs at any character; avoids biblatex's stretched-out URL spacing
+\usepackage[capitalize]{cleveref}
+
+\usepackage{tikz}
+\usepackage{pdflscape}
+\usepackage{afterpage}
+
+\usepackage{amssymb}
+\usepackage{newpxtext}
+\usepackage[varg,bigdelims]{newpxmath}
+\usepackage{mathrsfs}
+\usepackage{dutchcal}
+\usepackage[scaled=0.95]{helvet}
+\DeclareMathAlphabet{\mathsf}{T1}{phv}{m}{n}
+\usepackage{fontawesome}
+\usepackage{ebproof}
+\usepackage{stmaryrd}
+
+% cleveref %
+  \newcommand{\creflastconjunction}{, and\nobreakspace} % serial comma
+  \crefformat{enumi}{\card#2#1#3}
+  \crefalias{chapter}{section}
+
+
+% biblatex %
+  \addbibresource{Library20260419.bib}
+
+% hyperref %
+  \hypersetup{final}
+
+% enumitem %
+  \setlist{nosep}
+  \setlistdepth{6}
+
+
+% tikz %
+
+  \usetikzlibrary{
+  	cd,
+  	math,
+  	decorations.markings,
+		decorations.pathreplacing,
+		decorations.pathmorphing,
+  	positioning,
+  	arrows.meta,
+  	shapes,
+		shadows,
+		shadings,
+  	calc,
+  	fit,
+  	quotes,
+  	intersections,
+  	circuits.logic.US,
+  }
+
+  \tikzset{
+biml/.tip={Glyph[glyph math command=triangleleft, glyph length=.95ex]},
+bimr/.tip={Glyph[glyph math command=triangleright, glyph length=.95ex]},
+}
+
+\tikzset{
+	tick/.style={postaction={
+  	decorate,
+    decoration={markings, mark=at position 0.5 with
+    	{\draw[-] (0,.4ex) -- (0,-.4ex);}}}
+  }
+}
+\tikzset{
+	slash/.style={postaction={
+  	decorate,
+    decoration={markings, mark=at position 0.5 with
+    	{\draw[-] (.3ex,.3ex) -- (-.3ex,-.3ex);}}}
+  }
+}
+
+% oriented WD style (Schultz--Spivak wiring diagrams)
+\tikzset{
+	oriented WD/.style={
+		every to/.style={out=0,in=180,draw},
+    label/.style={
+    	font=\everymath\expandafter{\the\everymath\scriptstyle},
+      inner sep=0pt,
+      node distance=2pt and -2pt},
+    semithick,
+    node distance=1 and 1,
+    decoration={markings, mark=at position \stringdecpos with \stringdec},
+    ar/.style={postaction={decorate}},
+    execute at begin picture={\tikzset{
+    	x=\bbx, y=\bby,
+      every fit/.style={inner xsep=\bbx, inner ysep=\bby}}}
+    },
+    string decoration/.store in=\stringdec,
+    string decoration={\arrow{stealth}},
+    string decoration pos/.store in=\stringdecpos,
+    string decoration pos=.7,
+    bbx/.store in=\bbx,
+    bbx = 1.5cm,
+    bby/.store in=\bby,
+    bby = 1.5ex,
+    bb port sep/.store in=\bbportsep,
+    bb port sep=1.5,
+    bb port length/.store in=\bbportlen,
+    bb port length=4pt,
+    bb penetrate/.store in=\bbpenetrate,
+    bb penetrate=0,
+    bb min width/.store in=\bbminwidth,
+    bb min width=1cm,
+    bb rounded corners/.store in=\bbcorners,
+    bb rounded corners=2pt,
+    bb small/.style={
+    	bb port sep=1, bb port length=2.5pt, bbx=.4cm, bb min width=.4cm, bby=.7ex},
+    bb/.code 2 args={
+    	\pgfmathsetlengthmacro{\bbheight}{\bbportsep * (max(#1,#2)+1) * \bby}
+      \pgfkeysalso{draw,minimum height=\bbheight,minimum
+       width=\bbminwidth,outer sep=0pt,
+         rounded corners=\bbcorners,thick,
+         prefix after command={\pgfextra{\let\fixname\tikzlastnode}},
+         append after command={\pgfextra{\draw
+            \ifnum #1=0{} \else foreach \i in {1,...,#1} {
+            	($(\fixname.north west)!{\i/(#1+1)}!(\fixname.south west)$) +(-\bbportlen,0) coordinate (\fixname_in\i) -- +(\bbpenetrate,0) coordinate (\fixname_in\i')}\fi
+            \ifnum #2=0{} \else foreach \i in {1,...,#2} {
+            	($(\fixname.north east)!{\i/(#2+1)}!(\fixname.south east)$) +(-\bbpenetrate,0) coordinate (\fixname_out\i') -- +(\bbportlen,0) coordinate (\fixname_out\i)}\fi;
+           }}}
+		},
+		bb name/.style={
+     	append after command={
+				\pgfextra{\node[anchor=north] at (\fixname.north) {#1};}
+			}
+		}
+}
+
+% a single {1}{1} box with an input and an output wire;
+% #1 = input-wire label, #2 = output-wire label (either may be empty)
+\newcommand{\boxpic}[2]{%
+  \begin{tikzpicture}[oriented WD, bb small, baseline=(M.south)]
+    \node[bb={1}{1}] (M) {};
+    \node[left=-1pt] at (M_in1) {\scriptsize #1};
+    \node[right=-1pt] at (M_out1) {\scriptsize #2};
+  \end{tikzpicture}%
+}
+
+% a single {0}{1} box with only an output wire; #1 = output-wire label
+\newcommand{\boxpicout}[1]{%
+  \begin{tikzpicture}[oriented WD, bb small, baseline=(M.south)]
+    \node[bb={0}{1}] (M) {};
+    \node[right=-1pt] at (M_out1) {\scriptsize #1};
+  \end{tikzpicture}%
+}
+
+
+  % amsthm + aliascnt (so cleveref prints the correct environment name) %
+\usepackage{aliascnt}
+
+\theoremstyle{definition}
+\newtheorem{definitionx}{Definition}[section]
+\crefname{definitionx}{Definition}{Definitions}
+
+\newaliascnt{examplex}{definitionx}
+\newtheorem{examplex}[examplex]{Example}
+\aliascntresetthe{examplex}
+\crefname{examplex}{Example}{Examples}
+
+\newaliascnt{warning}{definitionx}
+\newtheorem{warning}[warning]{Warning}
+\aliascntresetthe{warning}
+\crefname{warning}{Warning}{Warnings}
+
+\newaliascnt{remarkx}{definitionx}
+\newtheorem{remarkx}[remarkx]{Remark}
+\aliascntresetthe{remarkx}
+\crefname{remarkx}{Remark}{Remarks}
+
+\newaliascnt{notation}{definitionx}
+\newtheorem{notation}[notation]{Notation}
+\aliascntresetthe{notation}
+\crefname{notation}{Notation}{Notations}
+
+\newaliascnt{conventionx}{definitionx}
+\newtheorem{conventionx}[conventionx]{Convention}
+\aliascntresetthe{conventionx}
+\crefname{conventionx}{Convention}{Conventions}
+
+\theoremstyle{plain}
+
+\newaliascnt{theorem}{definitionx}
+\newtheorem{theorem}[theorem]{Theorem}
+\aliascntresetthe{theorem}
+\crefname{theorem}{Theorem}{Theorems}
+
+\newaliascnt{proposition}{definitionx}
+\newtheorem{proposition}[proposition]{Proposition}
+\aliascntresetthe{proposition}
+\crefname{proposition}{Proposition}{Propositions}
+
+\newaliascnt{corollary}{definitionx}
+\newtheorem{corollary}[corollary]{Corollary}
+\aliascntresetthe{corollary}
+\crefname{corollary}{Corollary}{Corollaries}
+
+\newaliascnt{lemma}{definitionx}
+\newtheorem{lemma}[lemma]{Lemma}
+\aliascntresetthe{lemma}
+\crefname{lemma}{Lemma}{Lemmas}
+
+\newaliascnt{fact}{definitionx}
+\newtheorem{fact}[fact]{Fact}
+\aliascntresetthe{fact}
+\crefname{fact}{Fact}{Facts}
+
+\newaliascnt{conjecture}{definitionx}
+\newtheorem{conjecture}[conjecture]{Conjecture}
+\aliascntresetthe{conjecture}
+\crefname{conjecture}{Conjecture}{Conjectures}
+
+\newtheorem*{theorem*}{Theorem}
+\newtheorem*{proposition*}{Proposition}
+\newtheorem*{corollary*}{Corollary}
+\newtheorem*{lemma*}{Lemma}
+\newtheorem*{warning*}{Warning}
+
+\newenvironment{example}
+  {\pushQED{\qed}\renewcommand{\qedsymbol}{$\lozenge$}\examplex}
+  {\popQED\endexamplex}
+
+ \newenvironment{remark}
+  {\pushQED{\qed}\renewcommand{\qedsymbol}{$\lozenge$}\remarkx}
+  {\popQED\endremarkx}
+
+  \newenvironment{definition}
+  {\pushQED{\qed}\renewcommand{\qedsymbol}{$\lozenge$}\definitionx}
+  {\popQED\enddefinitionx}
+
+  \newenvironment{convention}
+  {\pushQED{\qed}\renewcommand{\qedsymbol}{$\lozenge$}\conventionx}
+  {\popQED\endconventionx}
+
+
+%--------Single symbols--------%
+
+\DeclareSymbolFont{stmry}{U}{stmry}{m}{n}
+\DeclareMathSymbol\fatsemi\mathop{stmry}{"23}
+
+\DeclareFontFamily{U}{mathx}{\hyphenchar\font45}
+\DeclareFontShape{U}{mathx}{m}{n}{
+      <5> <6> <7> <8> <9> <10>
+      <10.95> <12> <14.4> <17.28> <20.74> <24.88>
+      mathx10
+      }{}
+\DeclareSymbolFont{mathx}{U}{mathx}{m}{n}
+\DeclareFontSubstitution{U}{mathx}{m}{n}
+\DeclareMathAccent{\widecheck}{0}{mathx}{"71}
+
+
+%--------Renewed commands--------%
+
+\renewcommand{\ss}{\subseteq}
+
+%--------Other Macros--------%
+
+
+\DeclarePairedDelimiter{\present}{\langle}{\rangle}
+\DeclarePairedDelimiter{\pairing}{\langle}{\rangle}
+\DeclarePairedDelimiter{\copair}{[}{]}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\corners}{\ulcorner}{\urcorner}
+\DeclarePairedDelimiter{\ihom}{[}{]}
+\DeclarePairedDelimiter{\absval}{\lvert}{\rvert}
+
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Iso}{Iso}
+\DeclareMathOperator{\Mor}{Mor}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\cod}{cod}
+\DeclareMathOperator{\idy}{idy}
+\DeclareMathOperator*{\colim}{colim}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\ob}{Ob}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\el}{El}
+
+
+\newcommand{\cat}[1]{\mathcal{#1}}%a generic category
+\newcommand{\Cat}[1]{\mathbf{#1}}%a named category
+\newcommand{\fun}[1]{\mathrm{#1}}%a function
+\newcommand{\Fun}[1]{\text{\normalfont\textsf{#1}}}%a named functor
+%\arr is registered via \trackTerm below (after the term-tracking machinery is defined)
+\providecommand{\Data}{\Cat{Data}}%category of adaptive-arrangement data (with integrator)
+\providecommand{\SMC}{\Cat{SMC}}%symmetric monoidal categories (codomain slice)
+
+\newcommand{\notsafe}[1]{{#1}}
+\makeatletter
+\NewDocumentCommand{\trackTermSymbol}{m m}{%
+  \expandafter\newcommand\csname termraw@#1\endcsname{\notsafe{#2}}%
+}
+\NewDocumentCommand{\termraw}{m}{%
+  \@ifundefined{termraw@#1}%
+    {\PackageError{termraw}{Term '#1' not registered}{Use \string\trackTermSymbol{#1}{...} first.}}%
+    {\@nameuse{termraw@#1}}%
+}
+\DeclareRobustCommand{\termref}[2]{\notsafe{\hypersetup{linkcolor=black}\hyperlink{term.#1}{#2}}}
+\NewDocumentCommand{\trackTerm}{m m m}{%
+  \trackTermSymbol{#2}{#3}%
+  \newcommand{#1}{\termref{#2}{\termraw{#2}}}%
+}
+\NewDocumentCommand{\defineTerm}{m}{\notsafe{\hypertarget{term.#1}{\termraw{#1}}}}
+\makeatother
+% To disable semantic notation links, replace the \termref line above with:
+% \DeclareRobustCommand{\termref}[2]{\notsafe{#2}}
+
+
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\then}{\mathbin{\fatsemi}}
+
+\newcommand{\too}{\longrightarrow}
+\newcommand{\To}[2][]{\xrightarrow[#1]{#2}}
+\renewcommand{\Mapsto}[1]{\xmapsto{#1}}
+\newcommand{\from}{\leftarrow}
+\newcommand{\From}[1]{\xleftarrow{#1}}
+\newcommand{\inj}{\hookrightarrow}
+\newcommand{\surj}{\twoheadrightarrow}
+\newcommand{\tto}{\rightrightarrows}
+\renewcommand{\iff}{\Leftrightarrow}
+\newcommand{\card}{\,^{\#}}
+\makeatletter
+\newcommand{\leftvec}[1]{\mathpalette\leftvec@{#1}}
+\newcommand{\leftvec@}[2]{\reflectbox{$\m@th#1\vec{\reflectbox{$\m@th#1#2$}}$}}
+\makeatother
+\newcommand{\bk}[2]{#1_{\leftvec{#2}}}
+
+
+\newcommand{\inv}{^{-1}}
+\newcommand{\op}{^\tn{op}}
+
+\newcommand{\tn}[1]{\textnormal{#1}}
+
+\newcommand{\nn}{\mathbb{N}}
+\newcommand{\rr}{\mathbb{R}}
+
+
+\trackTerm{\finset}{finset}{\Cat{Fin}}
+\trackTerm{\smset}{smset}{\Cat{Set}}
+\trackTerm{\smsetiso}{smsetiso}{\Cat{Set}_\cong}
+\trackTerm{\smcat}{smcat}{\Cat{Cat}}
+\trackTerm{\vect}{vect}{\Cat{Vect}}
+\trackTerm{\vectiso}{vectiso}{\Cat{Vect}_\cong}
+
+\newcommand{\List}{\Fun{List}}
+
+
+\trackTerm{\yon}{yon}{\mathcal{y}}
+\trackTerm{\poly}{poly}{\Cat{Poly}}
+
+% lenses
+\newcommand{\biglens}[2]{
+     \begin{bmatrix}{\vphantom{f_f^f}#2} \\ {\vphantom{f_f^f}#1} \end{bmatrix}
+}
+\newcommand{\littlelens}[2]{
+     \begin{bsmallmatrix}{\vphantom{f}#2} \\ {\vphantom{f}#1} \end{bsmallmatrix}
+}
+\newcommand{\lens}[2]{
+  \relax\if@display
+     \biglens{#1}{#2}
+  \else
+     \littlelens{#1}{#2}
+  \fi
+}
+
+
+\newcommand{\qand}{\quad\text{and}\quad}
+\newcommand{\qqand}{\qquad\text{and}\qquad}
+
+\newcommand{\coalg}{\tn{-}\Cat{Coalg}}
+\newcommand{\alg}{\tn{-}\Cat{Alg}}
+\newcommand{\Coalg}{\Fun{Coalg}}
+\newcommand{\enrcat}[1]{#1\tn{-}\smcat}% category of #1-enriched categories
+
+\trackTerm{\pc}{pc}{\mathbb{P}\Cat{C}}
+\trackTerm{\pciso}{pciso}{\mathbb{P}\Cat{C}_{\cong}}
+\trackTerm{\arr}{rwd}{\mathbb{A}\Cat{rr}}% abstract adaptive-arrangement operad
+
+%--------Paper-specific macros--------%
+
+\trackTerm{\mfd}{mfd}{\Cat{Mfd}}
+\trackTerm{\Store}{Store}{\Fun{Store}}
+\newcommand{\inc}{\Fun{inc}}
+\trackTermSymbol{cot}{\fun{cot}}
+\RenewDocumentCommand{\cot}{}{\termref{cot}{\termraw{cot}}}
+\NewDocumentCommand{\cotof}{m}{\termref{cot}{\termraw{cot}}(#1)}
+\trackTermSymbol{chiQ}{\chi}
+\newcommand{\chiQ}[1]{\termref{chiQ}{\termraw{chiQ}}_{#1}}
+\trackTermSymbol{Psisem}{\Psi}
+\newcommand{\Psisem}[1]{\termref{Psisem}{\termraw{Psisem}}_{#1}}
+\newcommand{\ev}{\fun{ev}}
+\newcommand{\coev}{\fun{coev}}
+\newcommand{\src}{\mathrm{src}}
+\newcommand{\tgt}{\mathrm{tgt}}
+\newcommand{\Part}{\bullet}
+\newcommand{\boxob}{\mathrm{box}}
+\trackTerm{\bang}{bang}{\mathord{!}}
+\newcommand{\tpow}[1]{^{\otimes #1}}
+\providecommand{\Sm}{\mathrm{Sm}}%the smooth adaptive-arrangement datum (instance of def.rewiring_datum); \sarr=\arr_{\Sm}
+\trackTerm{\sarr}{srwd}{\mathbb{A}\Cat{rr}_{\Sm}}
+\trackTerm{\Para}{Para}{\mathbb{P}\Cat{ara}}
+\newcommand{\para}[3][]{\Para_{#2}^{#1}(#3)}
+\trackTerm{\rmfdc}{rmfdc}{\Cat{RMfdC}}
+\trackTerm{\rvect}{rvect}{\Cat{RVect}}
+\trackTerm{\SLens}{SLens}{\Cat{SLens}}% submersion lenses (def. in proof of prop.euler_submersion_lenses)
+\newcommand{\rv}[1]{\mathbf{#1}}% a reactive vector space (object of \rvect): \rv Q=(Q,\sharpR_Q), carrier Q
+\trackTermSymbol{Lens}{\Cat{Lens}}
+\newcommand{\Lens}[1]{\termref{Lens}{\termraw{Lens}}_{#1}}
+\newcommand{\lmfd}{\Lens{\mfd}}
+\trackTermSymbol{LensFun}{\Cat{Lens}}% the backward comonad on \Lens{\cat C} induced by a monad (def. at prop.backward_comonad)
+\newcommand{\LensFun}[1]{\termref{LensFun}{\termraw{LensFun}}^{#1}}
+\trackTermSymbol{LensMor}{\Cat{Lens}}% the induced coKleisli functor from a pair (F,\theta) (def. at lem.lens_T_functoriality)
+\newcommand{\LensMor}[2]{\termref{LensMor}{\termraw{LensMor}}_{#1}^{#2}}
+\trackTermSymbol{Lcokl}{\Cat{Lens}_{\cat C}^{\Fun T}}
+\newcommand{\Lcokl}[2]{\termref{Lcokl}{\Cat{Lens}_{#1}^{#2}}}
+\newcommand{\plmfd}{\Lcokl{\mfd}{\rr}}
+\newcommand{\ltens}{\boxtimes}% monoidal product on a lens category (dedicated, base-independent)
+\newcommand{\bigltens}{\mathop{\vcenter{\hbox{\begin{tikzpicture}[line width=0.6pt,line join=miter]\def\s{5.5pt}\draw(-\s,-\s)rectangle(\s,\s);\draw(-\s,-\s)--(\s,\s);\draw(-\s,\s)--(\s,-\s);\end{tikzpicture}}}}\displaylimits}% indexed lens tensor (big \ltens), drawn so line weight is independent of size
+\newcommand{\ltpow}[1]{^{\ltens #1}}% lens-tensor power (cf. \tpow for base/poly tensor power)
+\newcommand{\inpt}[1]{#1^{-}}
+\newcommand{\outp}[1]{#1^{+}}
+\newcommand{\lensob}[1]{\binom{\inpt{#1}}{\outp{#1}}}% vertical lens-object notation; to revert, change to (\inpt{#1},\outp{#1})
+\newcommand{\lensobs}[2]{\binom{\inpt{#1}\otimes\inpt{#2}}{\outp{#1}\otimes\outp{#2}}}% monoidal product of two lens objects
+\trackTerm{\potd}{potd}{\fun{d}}
+\trackTerm{\potalg}{potalg}{\mathbf z}% T-monoid / potential algebra: \potalg=(z,e_z,m_z,\alpha), carrier z (defined at def.T_monoid)
+\newcommand{\md}{\mathsf{Md}}% finite set of modes; element i\in\md (prop.moding, prop.moded_algebra)
+\newcommand{\conf}{\mathrm{conf}}
+\newcommand{\phase}{\mathrm{phase}}
+\newcommand{\lrn}{\mathrm{lrn}}
+\newcommand{\euc}{\mathrm{Euc}}
+
+\newcommand{\Phip}[1]{\Phi'_{#1}}% polynomial interpretation; subscript is always the interpretation symbol (\interp=\mathfrak p), abbreviating the full 4-tuple datum. Never a partial unfolding like \Phi'_{\cot,(\yon,\potd)}.
+\trackTermSymbol{Phiphase}{\Phi_{\phase}}
+\newcommand{\Phiphase}{\termref{Phiphase}{\termraw{Phiphase}}}
+\trackTermSymbol{Phiconf}{\Phi_{\conf}}
+\newcommand{\Phiconf}{\termref{Phiconf}{\termraw{Phiconf}}}
+\trackTermSymbol{sharpEuc}{\sharp_{\euc}}
+\newcommand{\sharpEuc}{\termref{sharpEuc}{\termraw{sharpEuc}}}
+\trackTermSymbol{dyn}{\mathrm{dyn}}
+\newcommand{\dyn}{\termref{dyn}{\termraw{dyn}}}
+\trackTermSymbol{dynphase}{\mathrm{dyn}_{\mathrm{phase}}}% phase-integrator dynamics (def. at eqn.phase_integrator)
+\newcommand{\dynphase}{\termref{dynphase}{\termraw{dynphase}}}
+\trackTerm{\intg}{intg}{\mathfrak{i}}
+\trackTerm{\interp}{interp}{\mathfrak{p}}
+\trackTerm{\interpsm}{interpsm}{\mathrm{sm}}% smooth (cotangent) polynomial interpretation datum; concrete named choice (roman, like \conf/\phase), not the generic \interp=\mathfrak p of ch.framework
+\trackTermSymbol{sharpR}{\sharp}
+\newcommand{\sharpR}{\termref{sharp_map}{\termraw{sharpR}}}
+\trackTermSymbol{sharp_symp}{\sharp}
+\trackTermSymbol{sharpS}{\sharp}
+\newcommand{\sharpS}{\termref{sharp_symp}{\termraw{sharpS}}}
+
+\font\MnSyCfont=MnSymbolC10
+\font\MnSyCfonts=MnSymbolC7
+\font\MnSyCfontss=MnSymbolC5
+\newcommand{\smallsquare}{\mathchoice
+  {\mbox{\MnSyCfont\symbol{"68}}}%
+  {\mbox{\MnSyCfont\symbol{"68}}}%
+  {\mbox{\MnSyCfonts\symbol{"68}}}%
+  {\mbox{\MnSyCfontss\symbol{"68}}}}
+\newcommand{\blank}{\notsafe{\mathord{\mkern1mu\smallsquare\mkern2mu}}}
+
+\newcommand{\thanksAFOSR}[1]{This material is based upon work supported by the Air Force Office of Scientific Research under award number #1}
+
+
+%----Changeable document parameters----%
+
+% \linespread is set at the top, before \checkandfixthelayout, so it also drives the page layout
+%\allowdisplaybreaks
+\setsecnumdepth{subsection}
+\settocdepth{section}
+\setlength{\parindent}{15pt}
+\setcounter{tocdepth}{1}
+
+
+%---------------Document---------------%
+\begin{document}
+
+\title{Compositional Linearization for Superposition and Hamiltonianization}
+
+\author{
+Maximilien P\'eroux
+\and
+David I. Spivak}
+
+\date{\vspace{-.2in}}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+%\tableofcontents*
+
+%====================================================================
+\chapter{Introduction}\label{ch.intro}
+%====================================================================
+
+\printbibliography
+
+\end{document}
