@@ -59,7 +59,7 @@ citecolor=orange!50!black, urlcolor=orange!50!black, pdfencoding=unicode]{hyperr
 
 
 % biblatex %
-  \addbibresource{Library20260419.bib}
+  \addbibresource{Library20260611.bib}
 
 % hyperref %
   \hypersetup{final}
@@ -100,6 +100,12 @@ bimr/.tip={Glyph[glyph math command=triangleright, glyph length=.95ex]},
     decoration={markings, mark=at position 0.5 with
     	{\draw[-] (0,.4ex) -- (0,-.4ex);}}}
   }
+}
+\newcommand{\tickar}{\begin{tikzcd}[baseline=-0.5ex,cramped,sep=small,ampersand replacement=\&]{}\ar[r,tick]\&{}\end{tikzcd}}
+\NewDocumentCommand{\xtickar}{o m}{%
+  \begin{tikzcd}[baseline=-0.5ex,cramped,sep=small,ampersand replacement=\&]
+    {}\IfNoValueTF{#1}{\ar[r,tick,"{#2}"{above}]}{\ar[r,tick,"{#2}"{above},"{#1}"{below}]}\&{}
+  \end{tikzcd}%
 }
 \tikzset{
 	slash/.style={postaction={
@@ -382,6 +388,7 @@ bimr/.tip={Glyph[glyph math command=triangleright, glyph length=.95ex]},
 \trackTerm{\smcat}{smcat}{\Cat{Cat}}
 \trackTerm{\vect}{vect}{\Cat{Vect}}
 \trackTerm{\vectiso}{vectiso}{\Cat{Vect}_\cong}
+\trackTerm{\sbf}{sbf}{\mathit{SBF}}
 
 \newcommand{\List}{\Fun{List}}
 
@@ -407,6 +414,7 @@ bimr/.tip={Glyph[glyph math command=triangleright, glyph length=.95ex]},
 
 \newcommand{\qand}{\quad\text{and}\quad}
 \newcommand{\qqand}{\qquad\text{and}\qquad}
+\newcommand{\qqresp}{,\qquad\text{resp.}\quad}
 
 \newcommand{\coalg}{\tn{-}\Cat{Coalg}}
 \newcommand{\alg}{\tn{-}\Cat{Alg}}
@@ -560,7 +568,184 @@ test
 \chapter{Promonads}\label{ch.promonas}
 %====================================================================
 
+Say that a functor is \emph{io} if it is identity on objects. 
 
+\begin{proposition}\label{prop.promonad_io_functor}
+Let $\cat{C}$ be a category. The following sets are in bijection:
+\begin{enumerate}
+	\item A monad $(\cat{D},\eta,\mu)$ in the category of profunctors $\cat{C}\tickar\cat{C}$;
+	\item a category $\cat{D}$ equipped with an io functor $\cat{C}\To{\eta}\cat{D}$.
+\end{enumerate}
+We call these \emph{promonads} on $\cat{C}$. Let $\cat{D},\cat{D}'$ be promonads on $\cat{C}$. The following sets are in bijection
+\begin{enumerate}
+	\item monad morphisms $\cat{D}\to\cat{D}'$;
+	\item functors $\cat{D}\to\cat{D}'$ commuting with $\eta$ and $\eta'$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+**
+\end{proof}
+
+\begin{proposition}\label{prop.kleisli_cokleisli_promonad}
+Let $\cat{C}$ be a category and $T$ a monad (resp.\ comonad) on it. Then the io functor $\cat{C}\to\cat{C}_T$ into the Kleisli (resp.\ coKliesli) category is a promonad on $\cat{C}$.
+\end{proposition}
+\begin{proof}
+**
+\end{proof}
+
+\begin{proposition}\label{prop.grothendieck_monoid_promonad}
+Let $\cat{C}$ be a category and $M\colon\cat{C}\to\Cat{Mon}$ a functor to the category of set-theoretic monoids, i.e.\ categories with one object. Its grothendieck construction $\int^\cat{C}M$ is a promonoad on $\cat{C}$.
+\end{proposition}
+
+\begin{example}\label{ex.symmetric_bilinear_forms}
+Given a vector space $V$, there is a vector space of symmetric bilinear forms $B\colon V\otimes V\to\rr$. Taking the underlying monoid, we obtain a functor $\sbf\colon\cat{C}\to\Cat{Mon}$. Its Grothendieck construction has vector spaces as objects $\ob\int^\cat{C}\sbf=\ob\vect$ and a map $V\to V'$ consists of a pair $(f,B)$, where $f\colon V\to V'$ is a linear map and $B$ is a symmetric bilinear form on $V$. The identity is $(\id_V,0)$ and the composite $(f,b)\then(f',b')$ is $(f\then f', b+((f\otimes f)\then b'))$.
+\end{example}
+
+\begin{definition}\label{def.promonad_algebra_coalgebra}
+An \emph{algebra} (resp.\ coalgebra) on a promonad $\cat{C}\to\cat{D}$ consists of a pair $(C,\alpha)$ where $C\in\cat{C}$ is an object and 
+\[
+\alpha\colon\cat{D}(\blank,C)\to\cat{C}(\blank,C)
+\qqresp
+\alpha\colon\cat{D}(C,\blank)\to\cat{C}(C,\blank)
+\]
+is a natural transformation making the following diagrams commute\dnote{Make sense of lefthand map in righthand diagram}
+\[
+\begin{tikzcd}
+  \cat{C}(\blank, C)\ar[r, "\eta"]\ar[d,equal]&
+  \cat{D}(\blank, C)\ar[d, "\alpha"]\\
+  \cat{C}(\blank, C)\ar[r, equal]&
+  \cat{C}(\blank, C)
+\end{tikzcd}
+\hspace{.5in}
+\begin{tikzcd}
+	(\cat{D}\circ\cat{D})(\blank, C)\ar[r, "\mu"]\ar[d, color=red, "\cat{D}\circ\alpha"']&
+	\cat{D}(\blank, C)\ar[d, "\alpha"]\\
+	\cat{D}(\blank, C)\ar[r, "\alpha"']&
+	\cat{C}(\blank, C)
+\end{tikzcd}
+\]
+respectively (for coalgebras)
+\[
+\begin{tikzcd}
+  \cat{C}(C, \blank)\ar[r, "\eta"]\ar[d,equal]&
+  \cat{D}(C, \blank)\ar[d, "\alpha"]\\
+  \cat{C}(C, \blank)\ar[r, equal]&
+  \cat{C}(C, \blank)
+\end{tikzcd}
+\hspace{.5in}
+\begin{tikzcd}
+	(\cat{D}\circ\cat{D})(C, \blank)\ar[r, "\mu"]\ar[d, "\cat{D}\circ\alpha"']&
+	\cat{D}(C, \blank)\ar[d, "\alpha"]\\
+	\cat{D}(C, \blank)\ar[r, "\alpha"']&
+	\cat{C}(C, \blank)
+\end{tikzcd}
+\]
+\end{definition}
+
+\begin{proposition}\label{prop.kleisli_promonad_algebras}
+Let $T$ be a monad (resp.\ comonad) on $\cat{C}$. Then there is an isomorphism between the category of monad-algebras for $T$ and the category of promonoad-algebras for $\cat{C}_T$ (resp.\ between the category of comonad-coalgebras and promonad-coalgebras).
+\end{proposition}
+
+
+\begin{proposition}\label{prop.monoidal_promonad_io_functor}
+Let $(\cat{C},I,\otimes)$. The following are equivalent:
+\begin{enumerate}
+	\item Promonads $(\cat{D},\eta,\mu)$ for which $\cat{D}\colon\cat{C}\op\times\cat{C}\to\smset$ is lax monoidal and $\eta$ and $\mu$ are monoidal natural transformations
+	\item monoidal categories $(\cat{D},J,\odot)$ equipped with a strong monoidal io functor $\cat{C}\To{\eta}\cat{D}$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+**
+\end{proof}
+
+%--------------------------------------------------------------------
+\section{Promonads and lenses}\label{sec.promonads_lenses}
+%--------------------------------------------------------------------
+
+\subsection{The category of lenses}\label{sec.category_of_lenses}
+We first recall the category $\defineTerm{Lens}_{\cat{C}}$ of lenses in a symmetric monoidal category $(\cat{C},I,\otimes)$; see \cite{hedges2017coherence} and \cite[Def.~2.9]{spivak2019generalized}. Let $(\cat{C}, I,\otimes)$ be a symmetric monoidal category.
+
+An \emph{interface} in $\cat C$ is a pair $\lensob c$ whose output part $\outp c$ carries a comonoid structure $(\outp c,\varepsilon,\delta)$.%
+\footnote{
+When $(\cat{C},1,\times)$ is cartesian monoidal, every object has a unique comonoid structure and every morphism is automatically a comonoid homomorphism~\cite{fox1976coalgebras}.
+}
+A \emph{lens} $f\colon\lensob c\to\lensob d$ consists of a forward map $\outp f\colon\outp c\to\outp d$ (a comonoid homomorphism) and a backward map $\inpt f\colon\outp c\otimes\inpt d\to\inpt c$ (any map in $\cat{C}$). Such a morphism can be depicted as follows:
+\begin{equation}\label{eqn.lens_map}
+\begin{tikzpicture}[oriented WD, bb port length=5pt, bb port sep=1, bb min width=.4cm, bbx=.5cm, bby=.7ex, baseline=(fo)]
+  \node[bb={1}{1}] (fo) {$\outp f$};
+  \node[bb={1}{2}, above left=6 and 1.5 of fo] (fi) {$\inpt f$};
+  \node[circle, draw, fill=black, inner sep=0, minimum size=3pt, left=1 of fo] (dot) {};
+  \coordinate (co) at ($(dot)+(-3,0)$);
+  \coordinate (do) at ($(fo.east)+(1,0)$);
+  \coordinate (ci) at (co |- fi_in1);
+  \coordinate (di) at (do |- fi_out2);
+  \node[left=0 of co] {$\outp c$};
+  \node[right=0 of do] {$\outp d$};
+  \node[left=0 of ci] {$\inpt c$};
+  \node[right=0 of di] {$\inpt d$};
+  \draw[ar] (co) to (dot);
+  \draw[ar] (dot) to (fo_in1);
+  \draw[ar] (fo_out1) to (do);
+  \draw[ar] (fi_in1) to (ci);
+  \draw[ar] (di) to (fi_out2);
+  \draw[ar] (dot) to[out=30, in=0] (fi_out1);
+\end{tikzpicture}
+\end{equation}
+The identity lens has $\outp{\id_{\lensob{c}}}\coloneqq\id_{\outp{c}}$ and $\inpt{\id_{\lensob{c}}}\coloneqq\varepsilon\otimes\id_{\inpt{c}}$, i.e.\ use the counit to discard the $\outp c$ part.
+
+Lenses compose as follows: given also $g\colon \lensob{d}\to\lensob{e}$, the composite $f\then g$ is given by
+\[
+\outp{(f\then g)}=\outp f\then\outp g
+\qqand
+\inpt{(f\then g)}=
+	(\delta_{\outp{c}}\otimes\inpt{e})\then
+	(\outp{c}\otimes\outp{f}\otimes\inpt{e})\then
+	(\outp{c}\otimes\inpt{g})\then
+	\inpt{f}.
+\]
+This dense notation can be depicted in a string-diagram as follows:
+\begin{equation*}
+\begin{tikzpicture}[oriented WD, bb port length=5pt, bb port sep=1, bb min width=.4cm, bbx=.5cm, bby=.7ex, baseline=(fo)]
+  \node[bb={1}{1}] (fo) {$\outp f$};
+  \node[bb={1}{1}, right=5 of fo] (go) {$\outp g$\vphantom{$\inpt f$}};
+  \node[bb={1}{2}, above left=6 and 1.5 of fo] (fi) {$\inpt f$};
+  \node[bb={1}{2}, above left=6 and 1.8 of go] (gi) {$\inpt g$\vphantom{$\inpt f$}};
+  \node[circle, draw, fill=black, inner sep=0, minimum size=3pt, left=1 of fo] (dot1) {};
+  \node[circle, draw, fill=black, inner sep=0, minimum size=3pt] at ($(fo.east)!.75!(go.west)$) (dot2) {};
+  \coordinate (co) at ($(dot1)+(-3,0)$);
+  \coordinate (eo) at ($(go.east)+(1,0)$);
+  \coordinate (ci) at (co |- fi_in1);
+  \coordinate (ei) at (eo |- gi_out2);
+  \node[left=0 of co] {$\outp c$};
+  \node[right=0 of eo] {$\outp e$};
+  \node[left=0 of ci] {$\inpt c$};
+  \node[right=0 of ei] {$\inpt e$};
+  \draw[ar] (co) to (dot1);
+  \draw[ar] (dot1) to (fo_in1);
+  \draw[ar] (fo_out1) to node[above, font=\scriptsize] {$\outp d$} (dot2);
+  \draw[ar] (dot2) to (go_in1);
+  \draw[ar] (go_out1) to (eo);
+  \draw[ar] (fi_in1) to (ci);
+  \draw[ar] (ei) to (gi_out2);
+  \draw[ar] (gi_in1) to[out=180, in=0] node[above, font=\scriptsize] {$\inpt d$} (fi_out2);
+  \draw[ar] (dot1) to[out=30, in=0] (fi_out1);
+  \draw[ar] (dot2) to[out=30, in=0] (gi_out1);
+\end{tikzpicture}
+\end{equation*}
+
+\begin{definition}\label{def.lens}
+For a symmetric monoidal category $(\cat C, I,\otimes)$, the category $\Lens{\cat C}$ of \emph{interfaces} and \emph{lenses} has as objects the pairs $\lensob c$ with $\outp c$ a comonoid $(\varepsilon_{\outp c},\delta_{\outp c})$, and as morphisms $\lensob c\to\lensob d$ the pairs $\binom{\inpt f}{\outp f}$ with $\outp f\colon\outp c\to\outp d$ a comonoid homomorphism and $\inpt f\colon\outp c\otimes\inpt d\to\inpt c$ any map in $\cat{C}$, with identity and composition as above.
+
+It is symmetric monoidal with unit $\binom{I}{I}$ and
+\[
+\lensob{c}\ltens\lensob{d}\coloneqq\lensobs{c}{d}.
+\qedhere
+\]
+\end{definition}
+
+\begin{proposition}\label{prop.monoidal_promonad_lenses}
+Let $\cat{C}$ be a symmetric monoidal category and $\cat{D}$ a monoidal promonad on it. Then there is a promonad $\Lens{\cat{C}}\to\Lens{\cat{C}}^\cat{D}$ for which a map $\binom{\inpt c}{\outp c}\to\binom{\inpt d}{\outp d}$ consists of a $\cat{C}$-comonoid map $\outp c\to\outp d$ and a $\cat{D}$ map $\outp c\otimes\inpt d\to\inpt c$.
+\end{proposition}
 
 
 \printbibliography
