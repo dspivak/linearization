@@ -463,6 +463,9 @@ bimr/.tip={Glyph[glyph math command=triangleright, glyph length=.95ex]},
 \trackTermSymbol{Lcokl}{\Cat{Lens}_{\cat C}^{\Fun T}}
 \newcommand{\Lcokl}[2]{\termref{Lcokl}{\Cat{Lens}_{#1}^{#2}}}
 \newcommand{\plmfd}{\Lcokl{\mfd}{\rr}}
+\trackTermSymbol{prokl}{\cat{C}_{T}}% Kleisli category of a promonad T on \cat{C} (def. at prop.promonad_io_functor)
+\newcommand{\prokl}[2]{\termref{prokl}{{#1}_{#2}}}% Kleisli category of the promonad #2 on the category #1
+\newcommand{\CT}{\prokl{\cat{C}}{T}}% Kleisli category of a generic promonad T on \cat{C}
 \newcommand{\ltens}{\boxtimes}% monoidal product on a lens category (dedicated, base-independent)
 \newcommand{\bigltens}{\mathop{\vcenter{\hbox{\begin{tikzpicture}[line width=0.6pt,line join=miter]\def\s{5.5pt}\draw(-\s,-\s)rectangle(\s,\s);\draw(-\s,-\s)--(\s,\s);\draw(-\s,\s)--(\s,-\s);\end{tikzpicture}}}}\displaylimits}% indexed lens tensor (big \ltens), drawn so line weight is independent of size
 \newcommand{\ltpow}[1]{^{\ltens #1}}% lens-tensor power (cf. \tpow for base/poly tensor power)
@@ -573,13 +576,13 @@ Say that a functor is \emph{io} if it is identity on objects.
 \begin{proposition}\label{prop.promonad_io_functor}
 Let $\cat{C}$ be a category. The following sets are in bijection:
 \begin{enumerate}
-	\item A monad $(\cat{D},\eta,\mu)$ in the category of profunctors $\cat{C}\tickar\cat{C}$;
-	\item a category $\cat{D}$ equipped with an io functor $\cat{C}\To{\eta}\cat{D}$.
+	\item a monad $(T,\eta,\mu)$ in the category of profunctors $\cat{C}\tickar\cat{C}$;
+	\item a category $\defineTerm{prokl}$ equipped with an io functor $\cat{C}\To{\eta}\CT$.
 \end{enumerate}
-We call these \emph{promonads} on $\cat{C}$. Let $\cat{D},\cat{D}'$ be promonads on $\cat{C}$. The following sets are in bijection
+We call these \emph{promonads} on $\cat{C}$, and we call $\CT$ the \emph{Kleisli category} of the promonad $T$; the underlying profunctor of $T$ is recovered as $T(x,y)=\CT(x,y)$. Let $T,T'$ be promonads on $\cat{C}$. The following sets are in bijection
 \begin{enumerate}
-	\item monad morphisms $\cat{D}\to\cat{D}'$;
-	\item functors $\cat{D}\to\cat{D}'$ commuting with $\eta$ and $\eta'$.
+	\item monad morphisms $T\to T'$;
+	\item functors $\CT\to\prokl{\cat{C}}{T'}$ commuting with $\eta$ and $\eta'$.
 \end{enumerate}
 \end{proposition}
 \begin{proof}
@@ -587,40 +590,40 @@ We call these \emph{promonads} on $\cat{C}$. Let $\cat{D},\cat{D}'$ be promonads
 \end{proof}
 
 \begin{proposition}\label{prop.kleisli_cokleisli_promonad}
-Let $\cat{C}$ be a category and $T$ a monad (resp.\ comonad) on it. Then the io functor $\cat{C}\to\cat{C}_T$ into the Kleisli (resp.\ coKliesli) category is a promonad on $\cat{C}$.
+Let $\cat{C}$ be a category and $T$ a monad (resp.\ comonad) on it. Then the io functor $\cat{C}\to\CT$ into the Kleisli (resp.\ coKleisli) category of $T$ is a promonad on $\cat{C}$, which we again denote $T$; its underlying profunctor is $T(x,y)=\cat{C}(x,Ty)$ (resp.\ $T(x,y)=\cat{C}(Tx,y)$). In particular, the notation $\CT$ from \cref{prop.promonad_io_functor} is unambiguous.
 \end{proposition}
 \begin{proof}
 **
 \end{proof}
 
 \begin{proposition}\label{prop.grothendieck_monoid_promonad}
-Let $\cat{C}$ be a category and $M\colon\cat{C}\to\Cat{Mon}$ a functor to the category of set-theoretic monoids, i.e.\ categories with one object. Its grothendieck construction $\int^\cat{C}M$ is a promonoad on $\cat{C}$.
+Let $\cat{C}$ be a category and $M\colon\cat{C}\op\to\Cat{Mon}$ a functor to the category of set-theoretic monoids, i.e.\ categories with one object. Its Grothendieck construction $\int_\cat{C}M$ is the Kleisli category of a promonad on $\cat{C}$.
 \end{proposition}
 
 \begin{example}\label{ex.symmetric_bilinear_forms}
-Given a vector space $V$, there is a vector space of symmetric bilinear forms $B\colon V\otimes V\to\rr$. Taking the underlying monoid, we obtain a functor $\sbf\colon\cat{C}\to\Cat{Mon}$. Its Grothendieck construction has vector spaces as objects $\ob\int^\cat{C}\sbf=\ob\vect$ and a map $V\to V'$ consists of a pair $(f,B)$, where $f\colon V\to V'$ is a linear map and $B$ is a symmetric bilinear form on $V$. The identity is $(\id_V,0)$ and the composite $(f,b)\then(f',b')$ is $(f\then f', b+((f\otimes f)\then b'))$.
+Given a vector space $V$, there is a vector space of symmetric bilinear forms $B\colon V\otimes V\to\rr$, and these pull back along linear maps. Taking the underlying additive monoid, we obtain a functor $\sbf\colon\vect\op\to\Cat{Mon}$. Its Grothendieck construction has vector spaces as objects $\ob\int_\vect\sbf=\ob\vect$ and a map $V\to V'$ consists of a pair $(f,B)$, where $f\colon V\to V'$ is a linear map and $B$ is a symmetric bilinear form on $V$. The identity is $(\id_V,0)$ and the composite $(f,B)\then(f',B')$ is $(f\then f', B+((f\otimes f)\then B'))$. By \cref{prop.grothendieck_monoid_promonad} this is the Kleisli category of a promonad on $\vect$.
 \end{example}
 
 \begin{definition}\label{def.promonad_algebra_coalgebra}
-An \emph{algebra} (resp.\ coalgebra) on a promonad $\cat{C}\to\cat{D}$ consists of a pair $(C,\alpha)$ where $C\in\cat{C}$ is an object and 
+An \emph{algebra} (resp.\ coalgebra) for a promonad $T$ on $\cat{C}$ consists of a pair $(C,\alpha)$ where $C\in\cat{C}$ is an object and
 \[
-\alpha\colon\cat{D}(\blank,C)\to\cat{C}(\blank,C)
+\alpha\colon T(\blank,C)\to\cat{C}(\blank,C)
 \qqresp
-\alpha\colon\cat{D}(C,\blank)\to\cat{C}(C,\blank)
+\alpha\colon T(C,\blank)\to\cat{C}(C,\blank)
 \]
 is a natural transformation making the following diagrams commute\dnote{Make sense of lefthand map in righthand diagram}
 \[
 \begin{tikzcd}
   \cat{C}(\blank, C)\ar[r, "\eta"]\ar[d,equal]&
-  \cat{D}(\blank, C)\ar[d, "\alpha"]\\
+  T(\blank, C)\ar[d, "\alpha"]\\
   \cat{C}(\blank, C)\ar[r, equal]&
   \cat{C}(\blank, C)
 \end{tikzcd}
 \hspace{.5in}
 \begin{tikzcd}
-	(\cat{D}\circ\cat{D})(\blank, C)\ar[r, "\mu"]\ar[d, color=red, "\cat{D}\circ\alpha"']&
-	\cat{D}(\blank, C)\ar[d, "\alpha"]\\
-	\cat{D}(\blank, C)\ar[r, "\alpha"']&
+	(T\circ T)(\blank, C)\ar[r, "\mu"]\ar[d, "T\circ\alpha"']&
+	T(\blank, C)\ar[d, "\alpha"]\\
+	T(\blank, C)\ar[r, "\alpha"']&
 	\cat{C}(\blank, C)
 \end{tikzcd}
 \]
@@ -628,31 +631,32 @@ respectively (for coalgebras)
 \[
 \begin{tikzcd}
   \cat{C}(C, \blank)\ar[r, "\eta"]\ar[d,equal]&
-  \cat{D}(C, \blank)\ar[d, "\alpha"]\\
+  T(C, \blank)\ar[d, "\alpha"]\\
   \cat{C}(C, \blank)\ar[r, equal]&
   \cat{C}(C, \blank)
 \end{tikzcd}
 \hspace{.5in}
 \begin{tikzcd}
-	(\cat{D}\circ\cat{D})(C, \blank)\ar[r, "\mu"]\ar[d, "\cat{D}\circ\alpha"']&
-	\cat{D}(C, \blank)\ar[d, "\alpha"]\\
-	\cat{D}(C, \blank)\ar[r, "\alpha"']&
+	(T\circ T)(C, \blank)\ar[r, "\mu"]\ar[d, "\alpha\circ T"']&
+	T(C, \blank)\ar[d, "\alpha"]\\
+	T(C, \blank)\ar[r, "\alpha"']&
 	\cat{C}(C, \blank)
 \end{tikzcd}
 \]
 \end{definition}
 
 \begin{proposition}\label{prop.kleisli_promonad_algebras}
-Let $T$ be a monad (resp.\ comonad) on $\cat{C}$. Then there is an isomorphism between the category of monad-algebras for $T$ and the category of promonoad-algebras for $\cat{C}_T$ (resp.\ between the category of comonad-coalgebras and promonad-coalgebras).
+Let $T$ be a monad (resp.\ comonad) on $\cat{C}$, considered as a promonad as in \cref{prop.kleisli_cokleisli_promonad}. Then there is an isomorphism between the category of monad-algebras for $T$ and the category of promonad-algebras for $T$ (resp.\ between the category of comonad-coalgebras and promonad-coalgebras).
 \end{proposition}
 
 
 \begin{proposition}\label{prop.monoidal_promonad_io_functor}
-Let $(\cat{C},I,\otimes)$. The following are equivalent:
+Let $(\cat{C},I,\otimes)$ be a monoidal category. The following are equivalent:
 \begin{enumerate}
-	\item Promonads $(\cat{D},\eta,\mu)$ for which $\cat{D}\colon\cat{C}\op\times\cat{C}\to\smset$ is lax monoidal and $\eta$ and $\mu$ are monoidal natural transformations
-	\item monoidal categories $(\cat{D},J,\odot)$ equipped with a strong monoidal io functor $\cat{C}\To{\eta}\cat{D}$.
+	\item promonads $(T,\eta,\mu)$ for which $T\colon\cat{C}\op\times\cat{C}\to\smset$ is lax monoidal and $\eta$ and $\mu$ are monoidal natural transformations;
+	\item monoidal structures $(J,\odot)$ on the Kleisli category $\CT$ for which the io functor $\cat{C}\To{\eta}\CT$ is strong monoidal.
 \end{enumerate}
+We call these \emph{monoidal promonads} on $\cat{C}$.
 \end{proposition}
 \begin{proof}
 **
@@ -744,8 +748,9 @@ It is symmetric monoidal with unit $\binom{I}{I}$ and
 \end{definition}
 
 \begin{proposition}\label{prop.monoidal_promonad_lenses}
-Let $\cat{C}$ be a symmetric monoidal category and $\cat{D}$ a monoidal promonad on it. Then there is a promonad $\Lens{\cat{C}}\to\Lens{\cat{C}}^\cat{D}$ for which a map $\binom{\inpt c}{\outp c}\to\binom{\inpt d}{\outp d}$ consists of a $\cat{C}$-comonoid map $\outp c\to\outp d$ and a $\cat{D}$ map $\outp c\otimes\inpt d\to\inpt c$.
+Let $\cat{C}$ be a symmetric monoidal category and $T$ a monoidal promonad on it. Then there is a promonad on $\Lens{\cat{C}}$ whose Kleisli category, denoted $\Lcokl{\cat{C}}{T}$, has the same objects as $\Lens{\cat{C}}$, and in which a map $\lensob{c}\to\lensob{d}$ consists of a comonoid homomorphism $\outp c\to\outp d$ in $\cat{C}$ and a map $\outp c\otimes\inpt d\to\inpt c$ in $\CT$.
 \end{proposition}
+
 
 
 \printbibliography
